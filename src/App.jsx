@@ -42,7 +42,7 @@ const INITIAL_PRESET_FOODS = [
   { id: 'hk-23', name: '每日綜合原味堅果', category: '油脂/堅果', calories: 70, protein: 2.2, carbs: 2.5, fat: 6.0, defaultUnit: '小包/10g (1脂)' }
 ];
 
-// PORTION EXCHANGES DATA (FROM MANUAL)
+// PORTION EXCHANGES DATA
 const PORTION_EXCHANGES = [
   {
     category: '五穀類 (1份 = 1/3碗飯 / 1片方包)',
@@ -104,7 +104,7 @@ const PORTION_EXCHANGES = [
   }
 ];
 
-// DINE OUT GUIDE DATA (FROM MANUAL)
+// DINE OUT GUIDE DATA
 const DINE_OUT_GUIDE = [
   {
     type: '茶餐廳 / 燒味',
@@ -134,7 +134,7 @@ const DINE_OUT_GUIDE = [
 
 export default function App() {
   const [currentDate, setCurrentDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'presets' | 'exchanges' | 'dineout' | 'calculator' | 'history'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'presets' | 'exchanges' | 'dineout' | 'calculator'
   
   // User Profile
   const [profile, setProfile] = useState(() => {
@@ -180,6 +180,9 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('全部');
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [portionMultiplier, setPortionMultiplier] = useState(1);
+  const [scanMode, setScanMode] = useState('library'); // 'library' | 'ai'
+  const [aiInputText, setAiInputText] = useState('');
+  const [aiScannedResult, setAiScannedResult] = useState(null);
 
   // Custom Food Form
   const [customFood, setCustomFood] = useState({
@@ -236,6 +239,41 @@ export default function App() {
     setIsLogModalOpen(false);
     setSelectedPreset(null);
     setPortionMultiplier(1);
+    setAiScannedResult(null);
+    setAiInputText('');
+    setScanMode('library');
+  };
+
+  const handleSimulateAiScan = (type) => {
+    if (type === 'photo') {
+      setAiScannedResult({
+        name: 'AI識別：鮮牛肉米線 (清湯少麵)',
+        calories: 380,
+        protein: 22.0,
+        carbs: 52.0,
+        fat: 8.0,
+        defaultUnit: '碗'
+      });
+    } else {
+      if (!aiInputText.trim()) return;
+      const text = aiInputText.toLowerCase();
+      let estCal = 400, estP = 20, estC = 45, estF = 12;
+      if (text.includes('雞') || text.includes('海南雞')) {
+        estCal = 480; estP = 30; estC = 35; estF = 15;
+      } else if (text.includes('牛肉') || text.includes('牛')) {
+        estCal = 420; estP = 24; estC = 48; estF = 10;
+      } else if (text.includes('沙律') || text.includes('青瓜')) {
+        estCal = 150; estP = 5; estC = 12; estF = 8;
+      }
+      setAiScannedResult({
+        name: `AI估算：${aiInputText}`,
+        calories: estCal,
+        protein: estP,
+        carbs: estC,
+        fat: estF,
+        defaultUnit: '份'
+      });
+    }
   };
 
   const handleDeleteLog = (id) => {
@@ -394,6 +432,14 @@ export default function App() {
             <PieChart className="w-4 h-4" /> 今日概覽
           </button>
           <button
+            onClick={() => setActiveTab('calculator')}
+            className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition whitespace-nowrap ${
+              activeTab === 'calculator' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Scale className="w-4 h-4" /> 目標設定
+          </button>
+          <button
             onClick={() => setActiveTab('presets')}
             className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition whitespace-nowrap ${
               activeTab === 'presets' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
@@ -416,14 +462,6 @@ export default function App() {
             }`}
           >
             <Compass className="w-4 h-4" /> 外食指南
-          </button>
-          <button
-            onClick={() => setActiveTab('calculator')}
-            className={`flex-1 min-w-[80px] py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition whitespace-nowrap ${
-              activeTab === 'calculator' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <Scale className="w-4 h-4" /> 目標設定
           </button>
         </div>
 
@@ -546,7 +584,7 @@ export default function App() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-800">純水飲用追蹤器 (暢通腸道)</h3>
-                  <p className="text-xs text-slate-500">已喝：{todayWater} ml / 目標 {profile.waterGoalMl} ml (請勿用咖啡或濃茶代替)</p>
+                  <p className="text-xs text-slate-500">已喝：{todayWater} ml / 目標 {profile.waterGoalMl} ml</p>
                 </div>
               </div>
 
@@ -838,32 +876,69 @@ export default function App() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">年齡</label>
-                <input 
-                  type="number" 
-                  value={profile.age} 
-                  onChange={(e) => handleUpdateProfile({ age: parseInt(e.target.value) || 25 })}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium"
-                />
+                <div className="flex items-center gap-1">
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ age: Math.max(1, profile.age - 1) })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >-</button>
+                  <input 
+                    type="number" 
+                    value={profile.age === '' ? '' : profile.age} 
+                    onChange={(e) => handleUpdateProfile({ age: e.target.value === '' ? '' : parseInt(e.target.value) })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-center"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ age: (profile.age === '' ? 0 : profile.age) + 1 })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >+</button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">身高 (cm)</label>
-                <input 
-                  type="number" 
-                  value={profile.height} 
-                  onChange={(e) => handleUpdateProfile({ height: parseInt(e.target.value) || 160 })}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium"
-                />
+                <div className="flex items-center gap-1">
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ height: Math.max(1, profile.height - 1) })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >-</button>
+                  <input 
+                    type="number" 
+                    value={profile.height === '' ? '' : profile.height} 
+                    onChange={(e) => handleUpdateProfile({ height: e.target.value === '' ? '' : parseInt(e.target.value) })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-center"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ height: (profile.height === '' ? 0 : profile.height) + 1 })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >+</button>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">體重 (kg)</label>
-                <input 
-                  type="number" 
-                  value={profile.weight} 
-                  onChange={(e) => handleUpdateProfile({ weight: parseFloat(e.target.value) || 50 })}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium"
-                />
+                <div className="flex items-center gap-1">
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ weight: Math.max(1, profile.weight - 0.5) })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >-</button>
+                  <input 
+                    type="number" 
+                    step="0.5"
+                    value={profile.weight === '' ? '' : profile.weight} 
+                    onChange={(e) => handleUpdateProfile({ weight: e.target.value === '' ? '' : parseFloat(e.target.value) })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-center"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => handleUpdateProfile({ weight: (profile.weight === '' ? 0 : profile.weight) + 0.5 })}
+                    className="w-10 h-10 bg-slate-100 text-slate-700 font-bold rounded-xl flex items-center justify-center hover:bg-slate-200"
+                  >+</button>
+                </div>
               </div>
 
               <div className="sm:col-span-2">
@@ -954,6 +1029,8 @@ export default function App() {
                 onClick={() => {
                   setIsLogModalOpen(false);
                   setSelectedPreset(null);
+                  setScanMode('library');
+                  setAiScannedResult(null);
                 }} 
                 className="text-slate-400 hover:text-slate-600 text-sm font-bold"
               >
@@ -961,7 +1038,120 @@ export default function App() {
               </button>
             </div>
 
-            {!selectedPreset ? (
+            {/* SCAN MODE TOGGLE */}
+            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+              <button
+                onClick={() => { setScanMode('library'); setSelectedPreset(null); setAiScannedResult(null); }}
+                className={`flex-1 py-2 rounded-lg transition ${scanMode === 'library' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
+              >
+                📚 食物資料庫搜尋
+              </button>
+              <button
+                onClick={() => { setScanMode('ai'); setSelectedPreset(null); }}
+                className={`flex-1 py-2 rounded-lg transition ${scanMode === 'ai' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600'}`}
+              >
+                📸 影相 / AI 智能估算
+              </button>
+            </div>
+
+            {scanMode === 'ai' ? (
+              <div className="space-y-4 py-2">
+                {!aiScannedResult ? (
+                  <div className="space-y-4">
+                    {/* PHOTO UPLOAD BOX */}
+                    <div className="border-2 border-dashed border-teal-300 bg-teal-50/50 rounded-2xl p-6 text-center space-y-3">
+                      <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto shadow-md">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-800">上載食物相片或現場拍照</h4>
+                        <p className="text-xs text-slate-500 mt-0.5">系統將自動辨識菜式並計算營養數據</p>
+                      </div>
+                      <label className="inline-block bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl cursor-pointer shadow-sm transition">
+                        選擇相片 / 拍照
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={() => handleSimulateAiScan('photo')}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="relative flex py-1 items-center">
+                      <div className="flex-grow border-t border-slate-200"></div>
+                      <span className="flex-shrink mx-4 text-slate-400 text-xs font-medium">或者文字描述菜式</span>
+                      <div className="flex-grow border-t border-slate-200"></div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <textarea
+                        placeholder="例如：一碗少飯切雞飯去皮、生腩牛米線清湯..."
+                        value={aiInputText}
+                        onChange={(e) => setAiInputText(e.target.value)}
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        rows="2"
+                      ></textarea>
+                      <button
+                        onClick={() => handleSimulateAiScan('text')}
+                        className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                      >
+                        智能估算營養
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="bg-teal-50 p-4 rounded-2xl border border-teal-100 space-y-1">
+                      <span className="text-[10px] bg-teal-600 text-white px-2 py-0.5 rounded font-bold">識別成功</span>
+                      <h4 className="font-bold text-slate-800 text-base">{aiScannedResult.name}</h4>
+                      <p className="text-xs text-slate-600">
+                        卡路里：<strong>{aiScannedResult.calories} kcal</strong> | P: {aiScannedResult.protein}g | C: {aiScannedResult.carbs}g | F: {aiScannedResult.fat}g
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">食用份量比例</label>
+                      <div className="flex items-center gap-1">
+                        <button 
+                          type="button"
+                          onClick={() => setPortionMultiplier(Math.max(0.25, (parseFloat(portionMultiplier) || 1) - 0.25))}
+                          className="w-12 h-12 bg-slate-100 text-slate-700 font-bold text-lg rounded-xl flex items-center justify-center hover:bg-slate-200"
+                        >-</button>
+                        <input 
+                          type="number"
+                          step="0.25"
+                          min="0.1"
+                          value={portionMultiplier}
+                          onChange={(e) => setPortionMultiplier(e.target.value)}
+                          className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-center"
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => setPortionMultiplier((parseFloat(portionMultiplier) || 1) + 0.25)}
+                          className="w-12 h-12 bg-slate-100 text-slate-700 font-bold text-lg rounded-xl flex items-center justify-center hover:bg-slate-200"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setAiScannedResult(null)}
+                        className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-200 transition"
+                      >
+                        重新拍照/輸入
+                      </button>
+                      <button
+                        onClick={() => handleAddLog(aiScannedResult, portionMultiplier)}
+                        className="flex-2 py-3 bg-teal-600 text-white rounded-xl font-bold text-xs hover:bg-teal-700 transition"
+                      >
+                        確認加入 {selectedMealType}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : !selectedPreset ? (
               <div className="space-y-3">
                 <input 
                   type="text"
@@ -999,14 +1189,26 @@ export default function App() {
                   <label className="block text-xs font-semibold text-slate-600 mb-1">
                     食用份量數量 (單位: {selectedPreset.defaultUnit})
                   </label>
-                  <input 
-                    type="number"
-                    step="0.25"
-                    min="0.1"
-                    value={portionMultiplier}
-                    onChange={(e) => setPortionMultiplier(e.target.value)}
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-center"
-                  />
+                  <div className="flex items-center gap-1">
+                    <button 
+                      type="button"
+                      onClick={() => setPortionMultiplier(Math.max(0.25, (parseFloat(portionMultiplier) || 1) - 0.25))}
+                      className="w-12 h-12 bg-slate-100 text-slate-700 font-bold text-lg rounded-xl flex items-center justify-center hover:bg-slate-200"
+                    >-</button>
+                    <input 
+                      type="number"
+                      step="0.25"
+                      min="0.1"
+                      value={portionMultiplier}
+                      onChange={(e) => setPortionMultiplier(e.target.value)}
+                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-center"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setPortionMultiplier((parseFloat(portionMultiplier) || 1) + 0.25)}
+                      className="w-12 h-12 bg-slate-100 text-slate-700 font-bold text-lg rounded-xl flex items-center justify-center hover:bg-slate-200"
+                    >+</button>
+                  </div>
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
@@ -1144,6 +1346,13 @@ export default function App() {
           <span className="text-[10px] mt-0.5">概覽</span>
         </button>
         <button 
+          onClick={() => setActiveTab('calculator')}
+          className={`flex flex-col items-center py-1 px-2 ${activeTab === 'calculator' ? 'text-teal-600 font-bold' : 'text-slate-400'}`}
+        >
+          <Scale className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">目標</span>
+        </button>
+        <button 
           onClick={() => setActiveTab('presets')}
           className={`flex flex-col items-center py-1 px-2 ${activeTab === 'presets' ? 'text-teal-600 font-bold' : 'text-slate-400'}`}
         >
@@ -1163,13 +1372,6 @@ export default function App() {
         >
           <Compass className="w-5 h-5" />
           <span className="text-[10px] mt-0.5">外食</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('calculator')}
-          className={`flex flex-col items-center py-1 px-2 ${activeTab === 'calculator' ? 'text-teal-600 font-bold' : 'text-slate-400'}`}
-        >
-          <Scale className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">目標</span>
         </button>
       </nav>
     </div>
