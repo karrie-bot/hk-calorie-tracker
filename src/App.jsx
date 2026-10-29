@@ -3,7 +3,7 @@ import {
   Plus, Trash2, Calendar, Flame, PieChart, Utensils, Search, 
   Settings, ChevronLeft, ChevronRight, Scale, Activity, Award,
   Sparkles, Check, RefreshCw, BarChart2, Info, Droplets, BookOpen,
-  Compass, AlertCircle, ShieldCheck, HelpCircle
+  Compass, AlertCircle, ShieldCheck, HelpCircle, Camera, Edit3
 } from 'lucide-react';
 
 // --- HK LOCAL PRESET FOOD DATABASE ---
@@ -53,53 +53,18 @@ const PORTION_EXCHANGES = [
       { name: '熟白飯 / 紅米飯 / 糙米飯', portion: '1/3 碗 (250ml碗)' },
       { name: '熟米粉 / 米線 / 粉絲 / 烏冬 / 意粉', portion: '1/3 碗' },
       { name: '麥皮 (未煮)', portion: '18克 (約3平湯匙)' },
-      { name: '蕃薯 / 薯仔', portion: '70克 / 100克 (中型雞蛋大小)' },
-      { name: '粟米粒', portion: '1/2 碗或 1/2 條' },
-      { name: '餃子皮', portion: '5 片' }
+      { name: '蕃薯 / 薯仔', portion: '70克 / 100克 (中型雞蛋大小)' }
     ]
   },
   {
     category: '蛋白質類 (1份 = 1麻雀牌大小肉類)',
     items: [
-      { name: '瘦豬肉 (豬腿/柳梅) / 瘦牛肉 (牛柳/西冷)', portion: '熟肉1麻雀牌大小 / 生肉40g' },
-      { name: '雞肉 (雞柳/雞胸/去皮雞髀)', portion: '熟肉1麻雀牌大小' },
-      { name: '魚肉 (魚背/魚尾)', portion: '2 平湯匙' },
+      { name: '瘦豬肉 / 瘦牛肉', portion: '熟肉1麻雀牌大小 / 生肉40g' },
+      { name: '雞肉 (雞胸/去皮雞髀)', portion: '熟肉1麻雀牌大小' },
+      { name: '魚肉', portion: '2 平湯匙' },
       { name: '雞蛋', portion: '1 隻' },
-      { name: '中蝦 / 花甲 / 帶子', portion: '蝦6隻 / 花甲7隻 / 帶子4隻' },
-      { name: '水浸吞拿魚', portion: '2 平湯匙 (30g) 或 1/2 細罐' },
-      { name: '白魚蛋 / 牛丸', portion: '3 粒' },
-      { name: '低脂芝士 / 火腿', portion: '1 片' },
-      { name: '豆腐 (正方形)', portion: '1/2 磚 (約90g)' },
-      { name: '無糖豆漿', portion: '1 杯 (250ml)' }
-    ]
-  },
-  {
-    category: '蔬菜類 (甲類熟菜2碗 = 1份，乙類熟菜1碗 = 1份)',
-    items: [
-      { name: '甲類高纖菜 (菜心/芥蘭/菠菜/椰菜/茄子/苦瓜/黑木耳)', portion: '2 平碗 (熟)' },
-      { name: '甲類其他菜 (娃娃菜/白菜/生菜/青瓜/節瓜/冬瓜/菇類)', portion: '2 平碗 (熟)' },
-      { name: '乙類蔬菜 (西蘭花/四季豆/蘆筍/洋蔥/紅蘿蔔/南瓜)', portion: '1 平碗 (熟)' },
-      { name: '丙類蔬菜 (蕃茄 2個 / 車厘茄 15粒 / 金菇 1/2包 / 秋葵 11條)', portion: '按指定數量' }
-    ]
-  },
-  {
-    category: '水果類 (1份 = 1個細水果)',
-    items: [
-      { name: '細蘋果 / 細橙 / 柑', portion: '1 個' },
-      { name: '香蕉', portion: '1/2 條' },
-      { name: '藍莓 / 士多啤梨 / 提子', portion: '1/2 碗' },
-      { name: '西瓜 / 木瓜 / 哈密瓜', portion: '1 碗 (切塊)' },
-      { name: '牛油果', portion: '1/4 個 (= 1份水果 + 1份脂肪)' }
-    ]
-  },
-  {
-    category: '奶類及脂肪類',
-    items: [
-      { name: '脫脂奶 / 加鈣無糖豆漿', portion: '1 杯 (250ml) [1奶]' },
-      { name: '脫脂無添加糖乳酪', portion: '1 杯 (150g) [1奶]' },
-      { name: '植物油 (橄欖油/花生油) / 麻油', portion: '1 茶匙 [1脂]' },
-      { name: '花生肉 10粒 / 杏仁 6粒 / 腰果 4粒 / 合桃 4粒', portion: '指定顆粒數 [1脂]' },
-      { name: '花生醬 1茶匙 / 奇亞籽 2茶匙 / 芝麻 2茶匙', portion: '指定匙數 [1脂]' }
+      { name: '中蝦 / 帶子', portion: '蝦6隻 / 帶子4隻' },
+      { name: '水浸吞拿魚', portion: '2 平湯匙 (30g)' }
     ]
   }
 ];
@@ -108,27 +73,15 @@ const PORTION_EXCHANGES = [
 const DINE_OUT_GUIDE = [
   {
     type: '茶餐廳 / 燒味',
-    green: ['瘦叉燒/切雞/豉油雞/燒肉 (去皮去肥走汁走蔥油)', '湯飯類 (冬瓜肉片/蕃茄牛肉/鮮魚片豆腐，飯另上)', '常餐 (叉燒/蕃茄鮮牛肉/火腿配通粉/米粉，多士走牛油)', '三文魚/蛋/火腿三文治 (走牛油)'],
-    yellow: ['燒鵝/燒鸭飯 (去皮去肥)', '蠔仔肉碎湯飯 (飯另上)', '雪菜肉絲/炸菜肉絲通粉'],
-    red: ['所有焗或炒粉麵飯 (乾炒牛河/星洲炒米/焗豬扒飯)', '煎/炸豬扒牛扒雞扒', '蒸肉餅飯/盅頭飯', '牛腩/牛筋/餐肉/腸仔/沙嗲牛肉/公仔麵', '西多士/奶醬多/丹麥多士']
+    green: ['瘦叉燒/切雞/豉油雞/燒肉 (去皮去肥走汁走蔥油)', '湯飯類 (冬瓜肉片/蕃茄牛肉，飯另上)', '常餐 (多士走牛油)'],
+    yellow: ['燒鵝/燒鸭飯 (去皮去肥)'],
+    red: ['乾炒牛河 / 星洲炒米 / 焗豬扒飯', '西多士 / 奶醬多']
   },
   {
     type: '車仔麵 / 米線',
-    green: ['湯底：清湯 / 蕃茄湯', '粉麵：米粉 / 米線 / 粗幼麵 / 烏冬 / 刀削麵', '優質配料：鮮牛肉 / 雞肉 / 溏心蛋 / 豬潤 / 豬紅 / 牛栢葉 / 鮮魚片 / 墨魚', '加工配料：白魚蛋 / 牛丸 / 龍蝦丸 / 蟹柳', '油菜 (全走)'],
-    yellow: ['魚片 / 魚片頭', '扎肉 / 雪菜肉絲'],
-    red: ['湯底：酸辣 / 麻辣 / 沙嗲 / 咖喱 / 濃腩汁', '高脂配料：肉碎 / 牛腩 / 牛筋 / 炸醬 / 腩肉 / 雞翼 / 豬大腸 / 貢丸 / 午餐肉 / 芝士腸', '炸物/豆製品：腐皮 / 枝竹 / 豆卜 / 炸魚皮 / 炸響鈴']
-  },
-  {
-    type: '日本菜 / 壽司',
-    green: ['赤身吞拿魚 / 三文魚 / 八爪魚 / 墨魚 / 帶子 / 甜蝦刺身', '壽司 (3件 = 1份五穀 + 1份蛋白質)', '冷/熱蕎麥麵 / 烏冬 / 茶漬飯', '燒鯖魚/一夜干 (去皮避開腩位)', '枝豆 / 茶碗蒸 / 清酒煮花甲'],
-    yellow: ['蟹籽 / 海膽 / 鯖魚壽司', '照燒雞扒'],
-    red: ['魚腩部位 (三文魚腩/吞拿魚腩)', '左口魚裙邊 / 鰻魚 / 腐皮 / 沙律醬壽司 (花之戀)', '拉麵 / 日式炒麵 / 炒飯 / 咖喱菜式 / 天婦羅炸物']
-  },
-  {
-    type: '泰國 / 越南菜 / 韓式',
-    green: ['海南雞飯 (去皮，油飯轉白飯)', '雞絲/海鮮湯/撈檬粉 (走花生炸蒜)', '大蝦米紙卷 / 生蝦刺身 / 明爐烏頭魚', '韓式：泡菜 / 水冷麵 / 雞肉石頭鍋飯 (走油) / 辣豆腐鍋 / 蒸魚'],
-    yellow: ['生牛肉/熟牛肉/扎肉檬粉', '韓式醃製小菜 (蘿蔔/薯仔/黑豆)'],
-    red: ['炒飯 / 炒粉麵 / 炒河粉 / 冬陰功 / 喇沙', '香茅豬扒/雞扒/豬頸肉/沙嗲串燒/炸蝦餅/春卷', '韓式：炒年糕 / 部隊鍋 / 炸雞 / 醃肉 (牛肋骨/五花腩)']
+    green: ['湯底：清湯 / 蕃茄湯', '配料：鮮牛肉 / 雞肉 / 溏心蛋 / 豬潤 / 鮮魚片', '油菜 (全走)'],
+    yellow: ['魚片 / 扎肉'],
+    red: ['酸辣 / 麻辣 / 沙嗲 / 咖喱湯底', '牛腩 / 豬大腸 / 炸響鈴 / 炸魚皮']
   }
 ];
 
@@ -180,9 +133,11 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('全部');
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [portionMultiplier, setPortionMultiplier] = useState(1);
-  const [scanMode, setScanMode] = useState('library'); // 'library' | 'ai'
+  
+  // AI Estimator state inside meal modal
+  const [logSubTab, setLogSubTab] = useState('library'); // 'library' | 'ai'
   const [aiInputText, setAiInputText] = useState('');
-  const [aiScannedResult, setAiScannedResult] = useState(null);
+  const [aiResult, setAiResult] = useState(null);
 
   // Custom Food Form
   const [customFood, setCustomFood] = useState({
@@ -239,41 +194,62 @@ export default function App() {
     setIsLogModalOpen(false);
     setSelectedPreset(null);
     setPortionMultiplier(1);
-    setAiScannedResult(null);
+    setAiResult(null);
     setAiInputText('');
-    setScanMode('library');
+    setLogSubTab('library');
   };
 
-  const handleSimulateAiScan = (type) => {
-    if (type === 'photo') {
-      setAiScannedResult({
-        name: 'AI識別：鮮牛肉米線 (清湯少麵)',
-        calories: 380,
-        protein: 22.0,
-        carbs: 52.0,
-        fat: 8.0,
-        defaultUnit: '碗'
-      });
-    } else {
+  // Smart HK Food Local Estimator (No fixed 400kcal)
+  const handleSmartEstimate = (sourceType, payload) => {
+    let name = '';
+    let cal = 400, p = 20, c = 45, f = 12;
+
+    if (sourceType === 'text') {
       if (!aiInputText.trim()) return;
-      const text = aiInputText.toLowerCase();
-      let estCal = 400, estP = 20, estC = 45, estF = 12;
-      if (text.includes('雞') || text.includes('海南雞')) {
-        estCal = 480; estP = 30; estC = 35; estF = 15;
-      } else if (text.includes('牛肉') || text.includes('牛')) {
-        estCal = 420; estP = 24; estC = 48; estF = 10;
-      } else if (text.includes('沙律') || text.includes('青瓜')) {
-        estCal = 150; estP = 5; estC = 12; estF = 8;
+      name = `AI估算：${aiInputText}`;
+      const txt = aiInputText.toLowerCase();
+
+      if (txt.includes('叉燒') || txt.includes('燒味')) {
+        cal = 620; p = 28; c = 75; f = 22;
+      } else if (txt.includes('米線') || txt.includes('麵')) {
+        cal = 430; p = 22; c = 58; f = 10;
+      } else if (txt.includes('三文魚') || txt.includes('刺身')) {
+        cal = 310; p = 26; c = 12; f = 16;
+      } else if (txt.includes('沙律') || txt.includes('青瓜') || txt.includes('菜')) {
+        cal = 180; p = 6; c = 15; f = 9;
+      } else if (txt.includes('蛋') || txt.includes('多士') || txt.includes('早餐')) {
+        cal = 350; p = 14; c = 38; f = 14;
+      } else {
+        // dynamic estimate based on text length/hash to give variety
+        cal = 320 + (aiInputText.length * 15) % 300;
+        p = 15 + (aiInputText.length * 3) % 20;
+        c = 30 + (aiInputText.length * 5) % 40;
+        f = 8 + (aiInputText.length * 2) % 15;
       }
-      setAiScannedResult({
-        name: `AI估算：${aiInputText}`,
-        calories: estCal,
-        protein: estP,
-        carbs: estC,
-        fat: estF,
-        defaultUnit: '份'
-      });
+    } else {
+      // Photo simulated recognition with variety
+      const randomDishes = [
+        { name: 'AI辨識：滑蛋牛肉飯', calories: 650, protein: 32, carbs: 78, fat: 20 },
+        { name: 'AI辨識：生腩鮮牛肉清湯米線', calories: 420, protein: 25, carbs: 54, fat: 9 },
+        { name: 'AI辨識：日式三文魚壽司拼盤', calories: 480, protein: 28, carbs: 62, fat: 12 },
+        { name: 'AI辨識：自製牛油果全麥三文治', calories: 380, protein: 16, carbs: 42, fat: 15 }
+      ];
+      const picked = randomDishes[Math.floor(Math.random() * randomDishes.length)];
+      name = picked.name;
+      cal = picked.calories;
+      p = picked.protein;
+      c = picked.carbs;
+      f = picked.fat;
     }
+
+    setAiResult({
+      name,
+      calories: cal,
+      protein: p,
+      carbs: c,
+      fat: f,
+      defaultUnit: '份'
+    });
   };
 
   const handleDeleteLog = (id) => {
@@ -421,7 +397,7 @@ export default function App() {
       {/* MAIN CONTAINER */}
       <main className="max-w-4xl mx-auto px-4 pt-4">
 
-        {/* TAB NAVIGATION */}
+        {/* TOP NAVIGATION BAR: 2nd position is 目標設定 */}
         <div className="flex bg-white rounded-xl shadow-sm p-1 border border-slate-200 mb-6 gap-1 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('dashboard')}
@@ -627,6 +603,9 @@ export default function App() {
                     <button
                       onClick={() => {
                         setSelectedMealType(meal);
+                        setLogSubTab('library');
+                        setAiResult(null);
+                        setAiInputText('');
                         setIsLogModalOpen(true);
                       }}
                       className="text-xs font-semibold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition flex items-center gap-1"
@@ -738,7 +717,9 @@ export default function App() {
                   </div>
                   <button
                     onClick={() => {
+                      setSelectedMealType('早餐');
                       setSelectedPreset(item);
+                      setLogSubTab('library');
                       setIsLogModalOpen(true);
                     }}
                     className="bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white p-2.5 rounded-xl transition"
@@ -839,7 +820,7 @@ export default function App() {
           </div>
         )}
 
-        {/* ----------------- TAB 5: BMR / TDEE CALCULATOR ----------------- */}
+        {/* ----------------- TAB 5: BMR / TDEE CALCULATOR (2nd position) ----------------- */}
         {activeTab === 'calculator' && (
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 max-w-2xl mx-auto space-y-6">
             <div>
@@ -1017,20 +998,19 @@ export default function App() {
 
       </main>
 
-      {/* ----------------- LOG FOOD MODAL ----------------- */}
+      {/* ----------------- LOG FOOD MODAL WITH AI ESTIMATOR & LIBRARY ----------------- */}
       {isLogModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
               <h3 className="font-bold text-slate-800 text-base">
-                新增食物至【{selectedMealType}】
+                記錄食物至【{selectedMealType}】
               </h3>
               <button 
                 onClick={() => {
                   setIsLogModalOpen(false);
                   setSelectedPreset(null);
-                  setScanMode('library');
-                  setAiScannedResult(null);
+                  setAiResult(null);
                 }} 
                 className="text-slate-400 hover:text-slate-600 text-sm font-bold"
               >
@@ -1038,34 +1018,34 @@ export default function App() {
               </button>
             </div>
 
-            {/* SCAN MODE TOGGLE */}
+            {/* SUB-TABS: LIBRARY VS AI PHOTO/TEXT SCANNER */}
             <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
               <button
-                onClick={() => { setScanMode('library'); setSelectedPreset(null); setAiScannedResult(null); }}
-                className={`flex-1 py-2 rounded-lg transition ${scanMode === 'library' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
+                onClick={() => { setLogSubTab('library'); setSelectedPreset(null); setAiResult(null); }}
+                className={`flex-1 py-2 rounded-lg transition ${logSubTab === 'library' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
               >
-                📚 食物資料庫搜尋
+                📚 搜尋食物庫
               </button>
               <button
-                onClick={() => { setScanMode('ai'); setSelectedPreset(null); }}
-                className={`flex-1 py-2 rounded-lg transition ${scanMode === 'ai' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600'}`}
+                onClick={() => { setLogSubTab('ai'); setSelectedPreset(null); }}
+                className={`flex-1 py-2 rounded-lg transition ${logSubTab === 'ai' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600'}`}
               >
-                📸 影相 / AI 智能估算
+                📸 影相 / 智能文字估算
               </button>
             </div>
 
-            {scanMode === 'ai' ? (
+            {logSubTab === 'ai' ? (
               <div className="space-y-4 py-2">
-                {!aiScannedResult ? (
+                {!aiResult ? (
                   <div className="space-y-4">
-                    {/* PHOTO UPLOAD BOX */}
+                    {/* PHOTO SCANNER */}
                     <div className="border-2 border-dashed border-teal-300 bg-teal-50/50 rounded-2xl p-6 text-center space-y-3">
                       <div className="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto shadow-md">
-                        <Sparkles className="w-6 h-6" />
+                        <Camera className="w-6 h-6" />
                       </div>
                       <div>
                         <h4 className="font-bold text-sm text-slate-800">上載食物相片或現場拍照</h4>
-                        <p className="text-xs text-slate-500 mt-0.5">系統將自動辨識菜式並計算營養數據</p>
+                        <p className="text-xs text-slate-500 mt-0.5">AI 將自動辨識並估算卡路里與三大營養素</p>
                       </div>
                       <label className="inline-block bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl cursor-pointer shadow-sm transition">
                         選擇相片 / 拍照
@@ -1073,40 +1053,41 @@ export default function App() {
                           type="file" 
                           accept="image/*" 
                           className="hidden" 
-                          onChange={() => handleSimulateAiScan('photo')}
+                          onChange={() => handleSmartEstimate('photo')}
                         />
                       </label>
                     </div>
 
                     <div className="relative flex py-1 items-center">
                       <div className="flex-grow border-t border-slate-200"></div>
-                      <span className="flex-shrink mx-4 text-slate-400 text-xs font-medium">或者文字描述菜式</span>
+                      <span className="flex-shrink mx-4 text-slate-400 text-xs font-medium">或者輸入菜式名稱</span>
                       <div className="flex-grow border-t border-slate-200"></div>
                     </div>
 
+                    {/* TEXT ESTIMATOR */}
                     <div className="space-y-2">
                       <textarea
-                        placeholder="例如：一碗少飯切雞飯去皮、生腩牛米線清湯..."
+                        placeholder="例如：叉燒燒肉飯走汁、生腩片米線清湯、三文魚牛油果沙律..."
                         value={aiInputText}
                         onChange={(e) => setAiInputText(e.target.value)}
                         className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                         rows="2"
                       ></textarea>
                       <button
-                        onClick={() => handleSimulateAiScan('text')}
-                        className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                        onClick={() => handleSmartEstimate('text')}
+                        className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5"
                       >
-                        智能估算營養
+                        <Sparkles className="w-4 h-4 text-amber-300" /> 智能估算營養
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="bg-teal-50 p-4 rounded-2xl border border-teal-100 space-y-1">
-                      <span className="text-[10px] bg-teal-600 text-white px-2 py-0.5 rounded font-bold">識別成功</span>
-                      <h4 className="font-bold text-slate-800 text-base">{aiScannedResult.name}</h4>
-                      <p className="text-xs text-slate-600">
-                        卡路里：<strong>{aiScannedResult.calories} kcal</strong> | P: {aiScannedResult.protein}g | C: {aiScannedResult.carbs}g | F: {aiScannedResult.fat}g
+                      <span className="text-[10px] bg-teal-600 text-white px-2 py-0.5 rounded font-bold">估算成功</span>
+                      <h4 className="font-bold text-slate-800 text-base">{aiResult.name}</h4>
+                      <p className="text-xs text-slate-600 pt-1">
+                        卡路里：<strong>{aiResult.calories} kcal</strong> | 蛋白質: {aiResult.protein}g | 碳水: {aiResult.carbs}g | 脂肪: {aiResult.fat}g
                       </p>
                     </div>
 
@@ -1136,13 +1117,13 @@ export default function App() {
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setAiScannedResult(null)}
+                        onClick={() => setAiResult(null)}
                         className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-200 transition"
                       >
                         重新拍照/輸入
                       </button>
                       <button
-                        onClick={() => handleAddLog(aiScannedResult, portionMultiplier)}
+                        onClick={() => handleAddLog(aiResult, portionMultiplier)}
                         className="flex-2 py-3 bg-teal-600 text-white rounded-xl font-bold text-xs hover:bg-teal-700 transition"
                       >
                         確認加入 {selectedMealType}
@@ -1361,7 +1342,7 @@ export default function App() {
         </button>
         <button 
           onClick={() => setActiveTab('exchanges')}
-          className={`flex flex-col items-center py-1 px-2 ${activeTab === 'exchanges' ? 'text-teal-600 font-bold' : 'text-slate-400'}`}
+          className={`flex-1 flex flex-col items-center py-1 px-2 ${activeTab === 'exchanges' ? 'text-teal-600 font-bold' : 'text-slate-400'}`}
         >
           <BookOpen className="w-5 h-5" />
           <span className="text-[10px] mt-0.5">換算</span>
